@@ -1,13 +1,6 @@
 import prisma from "@/prisma";
 import { NextResponse, NextRequest } from "next/server";
-
-export async function main() {
-  try {
-    await prisma.$connect();
-  } catch (e) {
-    return Error("Database connection failed");
-  }
-}
+import { main } from "../route";
 
 type Request = {
   body: {
@@ -38,7 +31,10 @@ export const PUT = async (req: NextRequest, res: NextResponse) => {
     console.log("Update");
     const idURL = req.url.split("/api/")[1];
     const id = parseInt(idURL);
-    console.log(id);
+    if (isNaN(id)) {
+      return NextResponse.json({ message: "Invalid ID" });
+    }
+
     await main();
     await prisma.todolist.update({
       where: { id },
